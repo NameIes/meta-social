@@ -55,6 +55,12 @@ def index(request):
         vk_data['user_data'] = api.users.get(user_ids=user_object.userpage_id, fields=['photo_id'])[0]
         vk_data['photo'] = api.photos.get(album_id='profile')['items'][0]['sizes'][3]['url']
 
+        groups = api.groups.get(user_ids=user_object.userpage_id)
+        groups_walls = []
+        for i in groups['items']:
+            tech = "-" + str(i)
+            cur_wall = api.wall.get(owner_id=tech)
+            groups_walls.append(cur_wall['items'])
         context['vk_data'] = vk_data
 
     return render(request, 'index.html', context)
