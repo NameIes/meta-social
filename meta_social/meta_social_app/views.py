@@ -21,7 +21,11 @@ def profile_page(request, user_id):
 
 def add_vk_captha(request):
     if request.is_ajax():
-        print(request.POST)
+        att = LoginAttempt.objects.get(user=request.user.id)
+        att.capcha = request.POST.get('capcha')
+        att.save()
+
+        return HttpResponse('Спасибо за капчу')
 
 
 
@@ -34,6 +38,8 @@ def auth_handler():
     # Код двухфакторной аутентификации
 
     key = input("Enter authentication code: ")
+    # Ждать 20 секунд , не пришли ли изменения в аттемпт, и если появилась капча - продолжить выполнение
+
     # Если: True - сохранить, False - не сохранять.
     remember_device = True
 
