@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+
+
+
+{% block main %}
+    <script>
+        function send(){
+        $.ajax({
+            url: '',         /* Куда пойдет запрос */
+            method: 'post',             /* Метод передачи (post или get) */
+            dataType: 'html',          /* Тип данных в ответе (xml, json, script, html). */
+            data: {
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+                user: userfield.value,
+                password: passwordfield.value,
+                },     /* Параметры передаваемые в запросе. */
+            success: function(data){   /* функция которая будет выполнена после успешного запроса.  */
+                capcha.innerHTML = data;            /* В переменной data содержится ответ от index.php. */
+            }
+        });
+        }
+
+    </script>
+
+
+
+
+    {% csrf_token %}
+    <input type="text" placeholder="Ваше мыло" id="userfield" name="user">
+    <input type="password" placeholder="пароль" id="passwordfield" name="password">
+    <p> мы не храним ваш пароль</p>
+    <button onclick="send()" > кек</button>
+    <div id="capcha">
+
+
+    </div>
+
+
+{% endblock %}

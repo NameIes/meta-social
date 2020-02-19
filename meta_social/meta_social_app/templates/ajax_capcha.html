@@ -1,0 +1,20 @@
+
+
+<input id="capchafield" name="capcha" placeholder="Введите капчу">
+<script>
+    function sendCap() {
+    $.ajax({
+            url: '/captha',         /* Куда пойдет запрос */
+            method: 'post',             /* Метод передачи (post или get) */
+            dataType: 'html',          /* Тип данных в ответе (xml, json, script, html). */
+            data: {
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+                capcha: capchafield.value,
+                },     /* Параметры передаваемые в запросе. */
+            success: function(data){   /* функция которая будет выполнена после успешного запроса.  */
+                capcha.innerHTML = data;            /* В переменной data содержится ответ от index.php. */
+            }
+        });
+        }
+</script>
+<button onclick="sendCap()">Отправить </button>
