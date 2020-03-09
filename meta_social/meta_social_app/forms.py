@@ -17,6 +17,9 @@ class SignUpForm(UserCreationForm):
             return email
         else:
             raise forms.ValidationError("Email is already in use!")
-
-
+class FileForm(forms.Form):
+    file = forms.FileField()
+    name = forms.CharField()
+    author = forms.CharField()
+    avatar = forms.ImageField()
 

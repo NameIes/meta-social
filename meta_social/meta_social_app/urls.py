@@ -8,7 +8,8 @@ urlpatterns = [
     path('accounts/profile/<int:user_id>/', profile),
     path('accounts/profile/<int:user_id>/second/', profile_second),
     path(r'connect/<operation>/<pk>/', add_friend),
-
+    path('music/', music),
+    path('add-sound/', add_sound),
     # Allauth urls
     path('accounts/', include('allauth.urls')),
 ]

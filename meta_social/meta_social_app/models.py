@@ -126,4 +126,9 @@ class Friend(models.Model):
             current_user=current_user
         )
         friend.users.remove(new_friend)
-
+class Audio(models.Model):
+    sound=models.FileField(upload_to="static/audio/")
+    author=models.CharField(max_length=100,default='1')
+    name=models.CharField(max_length=100,default='1')
+    url='/'
+    avatar = models.ImageField(upload_to='static/audio/avatars', null=True, blank=True, default='avatars/users/0.png')

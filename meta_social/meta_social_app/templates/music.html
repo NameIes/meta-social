@@ -1,0 +1,21 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>sound</title>
+</head>
+<body>
+<a href="/add-sound/">Добавить музыку</a>
+{% for q in audio %}
+<table>
+        <tr>
+            <td nowrap><h3>{{q.name}}</h3></td>
+            <td nowrap>{{q.author}}</td>
+            <td nowrap><img src="{{q.avatar.url}}" alt="Photo"></td>
+<td nowrap><audio controls src="{{q.url}}"></audio></td>
+        </tr>
+    {% endfor %}
+    </table>
+</body>
+</html>
