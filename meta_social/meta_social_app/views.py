@@ -1,20 +1,20 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.files.storage import FileSystemStorage
-from django.db.models import Q
 from django.http import Http404
-from django.shortcuts import render, redirect, HttpResponse
+from django.shortcuts import render, redirect, HttpResponseRedirect
 from django.views import View
 from simple_search import search_filter
 from django.utils import timezone
 from .models import Profile
 from PIL import Image
 
+
 from .models import Friend, Post, FriendshipRequest
-from .forms import PostForm, ProfileUpdateForm, UserUpdateForm
+from .forms import ProfileUpdateForm, UserUpdateForm
 
 
-def get_menu_context(page):
+def get_menu_context(page, pagename):
     available_pages = [
         'profile',
         'newsfeed',
@@ -27,6 +27,7 @@ def get_menu_context(page):
     context = {
         'page': page,
         'messages_count': 0,  # TODO: Вносить количество не прочитанных сообщений
+        'pagename': pagename,
     }
 
     return context
@@ -34,11 +35,8 @@ def get_menu_context(page):
 
 @login_required
 def index(request):
-    context = get_menu_context('newsfeed')
-
-    #context['news'] = request.user.profile.get_newsfeed()
+    context = get_menu_context('newsfeed', 'Главная')
     context['pagename'] = "Главная"
-
     return render(request, 'index.html', context)
 
 
@@ -47,11 +45,10 @@ def profile(request, user_id):
     if not User.objects.filter(id=user_id).exists():
         raise Http404()
 
-    context = get_menu_context('profile')
+    context = get_menu_context('profile', 'Профиль')
     context['profile'] = Profile.objects.get(user=user_id)
     user_item = User.objects.get(id=user_id)
     context['c_user'] = user_item
-    context['pagename'] = "Профиль"
 
     return render(request, 'profile/profile_page.html', context)
 
@@ -80,7 +77,7 @@ class ImageManage():
 
     def process_img(self):
         if self.image.size <= 5000000 and self.image.content_type.split('/')[0] == 'image':
-            img_name, img_extension = self.image.name.split('.')
+            img_extension = self.image.name.split('.')[1]
             self.path += img_extension
             self.remove_old_avatar()
             self.save_avatar()
@@ -115,7 +112,7 @@ class EditProfile(View):
             return redirect('/accounts/profile/' + str(kwargs['user_id']))
 
     def get(self, request, **kwargs):
-        context = get_menu_context('profile')
+        context = get_menu_context('profile', 'Редактирование профиля')
         context['profile'] = Profile.objects.get(user=kwargs['user_id'])
         context['uedit'] = User.objects.get(id=kwargs['user_id'])
         context['user_form'] = UserUpdateForm(instance=User.objects.get(id=kwargs['user_id']))
@@ -126,8 +123,7 @@ class EditProfile(View):
 
 @login_required
 def friends_list(request, user_id):
-    context = get_menu_context('friends')
-    context['pagename'] = "Список друзей"
+    context = get_menu_context('friends', 'Список друзей')
     context['c_user'] = User.objects.get(id=user_id)
 
     return render(request, 'friends/friends_list.html', context)
@@ -135,8 +131,7 @@ def friends_list(request, user_id):
 
 @login_required
 def friends_search(request):
-    context = get_menu_context('friends')
-    context['pagename'] = "Поиск друзей"
+    context = get_menu_context('friends', 'Поиск друзей')
     if request.method == 'POST':
         if request.POST.get('name'):
             query = request.POST.get('name')
@@ -150,36 +145,28 @@ def friends_search(request):
 
 @login_required
 def friends_requests(request):
-    context = get_menu_context('friends')
+    context = get_menu_context('friends', 'Заявки в друзья')
     context['pagename'] = "Заявки в друзья"
-
     return render(request, 'friends/requests.html', context)
 
 
 @login_required
 def friends_blacklist(request):
-    context = get_menu_context('friends')
-    context['pagename'] = "Черный список"
+    context = get_menu_context('friends', 'Черный список')
     return render(request, 'friends/blacklist.html', context)
 
 
-
-def post_list(request):
-    posts = Post.objects.all()
-    return render(request, 'post_list.html', {'posts': posts, 'pagename': "Посты"})
-
-
+@login_required
 def post_new(request):
     if request.method == "POST":
-        form = PostForm(request.POST)
-        if form.is_valid():
-            post = form.save(commit=False)
-            post.user = request.user
-            post.date = timezone.now()
+        if request.POST.get('text'):
+            post = Post(
+                text=request.POST.get('text'),
+                user=request.user,
+            )
             post.save()
-    else:
-        form = PostForm()
-    return render(request, 'post_edit.html', {'form': form, "pagename": "Посты"})
+
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
 @login_required
@@ -194,7 +181,7 @@ def send_friendship_request(request, user_id):
 
         item.save()
 
-    return redirect('/friends/search/')
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
 @login_required
@@ -208,7 +195,7 @@ def accept_request(request, request_id):
         friends_item.save()
         request_item.delete()
     
-    return redirect('/friends/requests/')
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
 @login_required
@@ -216,13 +203,14 @@ def remove_friend(request, user_id):
     if request.method == 'POST':
         friend_item = Friend.objects.get(from_user=request.user, to_user=User.objects.get(id=user_id))
         friend_item.delete()
-    return redirect('/friends/'+str(request.user.id))
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
 @login_required
 def blacklist_add(request, user_id):
     if request.method == 'POST':
         pass
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
 @login_required
@@ -230,4 +218,4 @@ def blacklist_remove(request, user_id):
     if request.method == 'POST':
         pass
 
-
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))

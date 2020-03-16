@@ -8,8 +8,6 @@ from .views import *
 
 urlpatterns = [
     path('', index, name='home'),
-    path('post_list/', post_list),
-    path('post_new/', post_new),
     path('accounts/profile/<int:user_id>/', profile),
     path('accounts/profile/<int:user_id>/edit_profile/', login_required(EditProfile.as_view())),
 
@@ -24,10 +22,8 @@ urlpatterns = [
     path('friends/add_blacklist/<int:user_id>/', blacklist_remove),
     path('friends/remove_blacklist/<int:user_id>/', blacklist_add),
 
-    # Allauth urls
-    path('accounts/', include('allauth.urls')),
+    path('post/create/', post_new)
 ]
 
 if settings.DEBUG:
     urlpatterns += staticfiles_urlpatterns() + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
