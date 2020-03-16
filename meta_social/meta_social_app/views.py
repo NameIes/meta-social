@@ -226,5 +226,15 @@ def blacklist_remove(request, user_id):
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 @login_required
-def send_message(request):
-    pass
+def chat(request):
+    context = {}
+    context['c_user'] = User.objects.get(id=request.user.id)
+
+    return render(request, 'chat/chat.html', context)
+
+
+def send_message(request, user_id):
+    context = {}
+    context['c_user'] = User.objects.get(id=request.user.id)
+
+    return render(request, 'chat/message.html', context)
