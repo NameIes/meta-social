@@ -214,7 +214,7 @@ def accept_request(request, request_id):
 @login_required
 def remove_friend(request, user_id):
     if request.method == 'POST':
-        friend_item = Friend.objects.get(id=user_id)
+        friend_item = Friend.objects.get(from_user=request.user, to_user=User.objects.get(id=user_id))
         friend_item.delete()
     return redirect('/friends/'+str(request.user.id))
 
