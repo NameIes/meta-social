@@ -6,12 +6,12 @@ from django.shortcuts import render, redirect, HttpResponseRedirect
 from django.views import View
 from simple_search import search_filter
 from django.utils import timezone
-from .models import Profile
+from .models import Profile, Messages
 from PIL import Image
 
 
 from .models import Friend, Post, FriendshipRequest
-from .forms import ProfileUpdateForm, UserUpdateForm
+from .forms import ProfileUpdateForm, UserUpdateForm, AddMessage
 
 
 def get_menu_context(page, pagename):
@@ -236,5 +236,12 @@ def chat(request):
 def send_message(request, user_id):
     context = {}
     context['c_user'] = User.objects.get(id=request.user.id)
-
+    context['form'] = AddMessage()
+    form = AddMessage(request.POST)
+    if form.is_valid():
+        mes = Messages(from_user=request.user, to_user=User.objects.get(id=user_id), message=form.data['message'])
+    else:
+        mes = Messages(from_user=request.user, to_user=User.objects.get(id=user_id))
+    mes.save()
+    context['mes'] = Messages.objects.filter(to_user=user_id)
     return render(request, 'chat/message.html', context)

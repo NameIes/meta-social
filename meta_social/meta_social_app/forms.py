@@ -46,3 +46,13 @@ class UserUpdateForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ('first_name', 'last_name')
+
+
+class AddMessage(forms.Form):
+    message = forms.CharField(max_length=250,
+                              required=True,
+                              widget=forms.Textarea(attrs={
+                                  'placeholder': 'Сообщение',
+                                  'style': 'width: 90%; height: 10%;'
+
+                              }))
