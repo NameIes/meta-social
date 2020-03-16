@@ -201,8 +201,13 @@ def accept_request(request, request_id):
 @login_required
 def remove_friend(request, user_id):
     if request.method == 'POST':
-        friend_item = Friend.objects.get(from_user=request.user, to_user=User.objects.get(id=user_id))
+        friend = User.objects.get(id=user_id)
+        try:
+            friend_item = Friend.objects.get(to_user=request.user, from_user=friend)
+        except:
+            friend_item = Friend.objects.get(to_user=friend, from_user=request.user)
         friend_item.delete()
+
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
@@ -219,3 +224,7 @@ def blacklist_remove(request, user_id):
         pass
 
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+@login_required
+def send_message(request):
+    pass

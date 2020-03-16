@@ -26,8 +26,8 @@
                 <ul class="list-group list-group-flush">
                     {% for req in user.profile.friendship_outbox_requests %}
                         <li class="list-group-item">
-                            <img src="{{ req.from_user.profile.avatar.url }}" class="rounded-circle border border-dark float-left" width=35 height=35>
-                            <a href="/accounts/profile/{{ req.from_user.id }}/" class="float-left ml-2">{{ req.from_user.username }}</a>
+                            <img src="{{ req.to_user.profile.avatar.url }}" class="rounded-circle border border-dark float-left" width=35 height=35>
+                            <a href="/accounts/profile/{{ req.to_user.id }}/" class="float-left ml-2">{{ req.to_user.username }}</a>
                         </li>
                     {% endfor %}
                 </ul>
