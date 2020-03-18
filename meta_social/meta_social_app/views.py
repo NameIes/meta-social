@@ -237,11 +237,24 @@ def send_message(request, user_id):
     context = {}
     context['c_user'] = User.objects.get(id=request.user.id)
     context['form'] = AddMessage()
-    form = AddMessage(request.POST)
-    if form.is_valid():
-        mes = Messages(from_user=request.user, to_user=User.objects.get(id=user_id), message=form.data['message'])
+    if Messages.objects.filter(from_user=user_id, to_user=request.user).exists():
+        if request.method == 'POST':
+            form = AddMessage(request.POST)
+
+        if form.is_valid():
+            mes = Messages(from_user=User.objects.get(id=user_id), to_user=request.user, message=form.data['message'])
+            mes.save()
+        # context['friend'] = Friend.objects.get(to_user=request.user, from_user=User.objects.get(id=user_id))
     else:
-        mes = Messages(from_user=request.user, to_user=User.objects.get(id=user_id))
-    mes.save()
-    context['mes'] = Messages.objects.filter(to_user=user_id)
+        if request.method == 'POST':
+            form = AddMessage(request.POST)
+
+        if form.is_valid():
+            mes = Messages(from_user=request.user, to_user=User.objects.get(id=user_id), message=form.data['message'])
+            mes.save()
+        # context['friend'] = Friend.objects.get(to_user=User.objects.get(id=user_id), from_user=request.user)
+
+    context['mes'] = Messages.objects.filter(to_user=User.objects.get(id=user_id))
+
+
     return render(request, 'chat/message.html', context)
