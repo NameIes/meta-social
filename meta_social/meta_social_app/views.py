@@ -375,6 +375,8 @@ def post_new(request):
         if postForm.is_valid() and formset.is_valid():
             post_form = postForm.save(commit=False)
             post_form.user = request.user
+            post_form.text = request.POST.get('text'),
+
             post_form.save()
 
             for form in formset.cleaned_data:
@@ -382,8 +384,12 @@ def post_new(request):
                     image = form['image']
                     photo = PostImages(post=post_form, image=image)
                     photo.save()
+            json_response = json.dumps({'username': post_form.user.username,
+                                'text': post_form.text})
 
+            return HttpResponse(json_response, content_type="application/json")
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
 
 
 @login_required
