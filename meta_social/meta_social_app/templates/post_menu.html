@@ -41,29 +41,17 @@
 </style>
 <div id="drop-area" class="card">
     <div class="card-body text-left">
-        <form method="POST" action="/post/create/" enctype="multipart/form-data" class="post-form">
-            {% csrf_token %}
 
             <div class="input-group">
-                <textarea class="form-control" rows="3" placeholder="Новая запись" name="comment" id="id_post"></textarea>
-            <button class="btn btn-outline-secondary"
-                    onclick="create_post(event, 'post/create/', )">
+                <textarea name="text" cols="40" rows="1" width="100%" class="form-control" style="resize: none; padding: 0px 2px;" required id="id_text"></textarea>
+            <button class="btn btn-outline-secondary" onclick="create_post(event, '/post/create/', )">
                     <img src="https://image.flaticon.com/icons/svg/786/786205.svg" width=20 height=20>
             </button>
-
 
             </div>
 
             <input type="file" id="fileElem" multiple accept="image/*" onchange="handleFiles(this.files)">
             <div id="gallery"></div>
-
-            {{ formset.management_form }}
-            <div style="display: none;">
-                {% for form in formset %}
-                    {{ form }} <br>
-                {% endfor %}
-            </div>
-        </form>
     </div>
 </div>
 
@@ -163,77 +151,22 @@
         }
     }
 
-    function create_post(e, link){
-        let textar = document.getElementById('id_comment');
-        let comment_text = textar.value;
+    function create_post(e, link) {
+        let textar = document.getElementById('id_text');
+        let text = textar.value;
+        console.log(text);
         $.ajax({
-        type: "POST",
-        url: link,
-        data: {
-        csrfmiddlewaretoken: '{{ csrf_token }}',
-        text: comment_text,
-        },
-
-        success: function (result) {
-        textar.value = "";
-        let json = result;
-
-        const li = document.createElement("li");
- let len = $('ul#all_posts li').length;
-
- let date_arr = json['date'].split(" ");
- let date_year = date_arr[0].split("-");
-
- let day = date_year[2][0] === '0' ? date_year[2][1] : date_year[2];
- let month = "";
-
- switch (date_year[1]) {
- case "01":
- month = "января"; break;
- case "02":
- month = "февраля"; break;
- case "03":
- month = "марта"; break;
- case "04":
- month = "апреля"; break;
- case "05":
- month = "мая"; break;
- case "06":
- month = "июня"; break;
- case "07":
- month = "июля"; break;
- case "08":
- month = "августа"; break;
- case "09":
- month = "сентября"; break;
- case "10":
- month = "октября"; break;
- case "11":
- month = "ноября"; break;
- case "12":
- month = "декабря"; break;
- default:
- console.log('Ooops');
- }
-
- let time = date_arr[1].split(":");
-
- let str_date = `Создан ${day} ${month} ${date_year[0]} г. ${time[0]}:${time[1]}`;
-
- li.innerHTML = `
- <div class="media" style="margin: 20px; border-style: outset">
- <img src="{% cropped_thumbnail user.profile "cropping" %}" class="rounded-circle border border-dark" width=35 height=35>
- <div class="media-body">
- <p style="text-align: left; margin-inline-start: 2px; "> Автор комментария ${json['username']}</p>
- <h5 style="text-align: left; margin-inline-start: 10px;">${json['text']}</h5>
- </div>
- <p style="text-align: right; margin: 3px">${str_date}</p>
- </div>
- `;
- document.getElementById('all_posts').appendChild(li);
- }
- })
- }
+            type: "POST",
+            url: link,
+            data: {
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+                text: text,
+            },
+            success: function (result) {
+                textar.value = "";
+            }
+        })
+    }
 
 
 </script>

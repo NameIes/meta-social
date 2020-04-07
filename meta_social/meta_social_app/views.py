@@ -364,31 +364,22 @@ def post_new(request):
     :param request: request
     :return: HttpResponseRedirect
     """
-    PostImageFormSet = modelformset_factory(
-        PostImages, form=PostImageForm, extra=10)
 
-    if request.method == "POST":
-        postForm = PostForm(request.POST)
-        formset = PostImageFormSet(
-            request.POST, request.FILES, queryset=PostImages.objects.none())
+    if request.method == 'POST':
+        post_model = Post(
+            user=request.user,
+            text=request.POST.get['text']
+        )
+        post_model.save()
 
-        if postForm.is_valid() and formset.is_valid():
-            post_form = postForm.save(commit=False)
-            post_form.user = request.user
-            post_form.text = request.POST.get('text'),
+        post_img = PostImages(
+            post=post_model,
+            image=request.POST.get('')
+        )
 
-            post_form.save()
 
-            for form in formset.cleaned_data:
-                if form:
-                    image = form['image']
-                    photo = PostImages(post=post_form, image=image)
-                    photo.save()
-            json_response = json.dumps({'username': post_form.user.username,
-                                'text': post_form.text})
-
-            return HttpResponse(json_response, content_type="application/json")
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
 
 
 
