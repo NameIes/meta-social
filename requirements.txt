@@ -9,3 +9,5 @@ django-s3-storage
 # for postgresql
 gunicorn==20.0.4
 psycopg2-binary==2.8.4
+
+django-debug-toolbar

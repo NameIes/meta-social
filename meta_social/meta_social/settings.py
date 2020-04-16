@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.facebook',
     # 'allauth.socialaccount.providers.twitter',
     # 'allauth.socialaccount.providers.instagram',
+    'debug_toolbar',
 ]
 
 MIDDLEWARE = [
@@ -58,6 +59,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'meta_social.urls'
@@ -176,3 +178,16 @@ AWS_ACCESS_KEY_ID = "SCW4Y1H2449R5QJ05B52"
 AWS_SECRET_ACCESS_KEY = "88aed883-f609-4331-b728-69b866fca6a2"
 AWS_S3_ENDPOINT_URL = "https://s3.nl-ams.scw.cloud"
 AWS_S3_BUCKET_NAME = "social-bucket"
+
+
+
+if DEBUG:
+    # `debug` is only True in templates if the vistor IP is in INTERNAL_IPS.
+    INTERNAL_IPS = type(str('c'), (), {'__contains__': lambda *a: True})()
+
+# INTERNAL_IPS = ['127.0.0.1', '172.18.0.1' ]
+# # import socket
+# #
+# # # tricks to have debug toolbar when developing with docker
+# # ip = socket.gethostbyname(socket.gethostname())
+# # INTERNAL_IPS += [ip[:-1] + '1']
