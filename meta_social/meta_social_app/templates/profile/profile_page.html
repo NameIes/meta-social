@@ -140,7 +140,7 @@
       {% else %}
           {% if c_user.profile.posts and not is_in_blacklist %}
             {% for post in c_user.profile.posts %}
-              <div class="card mt-3">
+              <div class="card mt-3" id="a">
                 <div class="card-body">
                   <img src="{{ post.get_owner.image.url }}" class="rounded-circle border border-dark" width=35 height=35>
                   <a href="{{ post.get_link }}">{{ post.get_owner_name }}</a>
@@ -268,5 +268,35 @@
             })
         }
 
+    </script>
+    <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+    <script>
+        var listElm = document.querySelector('all_comments');
+        var next_comm = document.getElementById('id_comment')
+        var loadMore = function() {
+          for (var i = 0; i < 7; i++) {
+            li.innerHTML = `
+                        <div class="card mb-2">
+                           <div class="card-body">
+                            <img src="{{ user.profile.image.url }}" class="rounded-circle border border-dark" width=35 height=35 style="margin-right: 640px">
+                               <p style="text-align: left; margin-inline-start: 2px; position: absolute; margin-left: 50px;  margin-top: -30px"><a href="/accounts/profile/${json['id']}/">${json['username']}</a></p>
+                                <div class="media-body">
+                                        <h5 style="text-align: left; margin-inline-start: 10px; padding-top: 5px;">${json['text']}</h5>
+                                    </div>
+                                <hr class="mt-1 mb-1">
+                                <p style="text-align: right; margin: 3px">${str_date}</p>
+                            </div>
+                        </div>
+                    `;
+            listElm.appendChild(li);
+            next_comm++;
+          }
+        }
+
+        listElm.addEventListener('scroll', function() {
+          if (listElm.scrollTop + listElm.clientHeight >= listElm.scrollHeight) {
+            loadMore();
+          }
+        });
     </script>
 {% endblock %}
