@@ -35,6 +35,7 @@
             {% if chat.last_message %}
                 <p id="id-last-msg" class="float-left text-muted ml-3">{{ chat.last_message.author.profile.get_name }}: {{ chat.last_message.message }}</p>
             {% endif %}
+            <p>{{ chat.get_unread_messages.count }}</p>
         </div>
         {% if not chat.is_dialog and user != chat.owner %}
             <button class="float-right btn btn-outline-secondary px-1 mx-0 my-0 py-3" style="width: 10%;" onclick="quitChat(event, '/chat/quit/{{ chat.id }}/')">Quit</button>
